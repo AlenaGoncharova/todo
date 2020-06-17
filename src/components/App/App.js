@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import AppHeader from '../AppHeader';
 import TodoList from '../TodoList';
@@ -7,14 +7,27 @@ import ItemStatusFilter from '../ItemStatusFilter';
 
 import './App.css';
 
-const App = () => {
+export default class App extends Component {
 
-    const todoData = [
+  state = {
+    todoData: [
       { label: 'Drink Coffee', important: false, id: 1 },
       { label: 'Make Awesome App', important: true, id: 2 },
       { label: 'Have a lunch', important: false, id: 3 },
-    ];
+    ],
+  }
+
+  deleteItem = (id) => {
+    this.setState(({ todoData }) => {
+      const newTodoData = todoData.filter((item) => item.id !== id);
+      return {
+        todoData: newTodoData,
+      }
+    });
+  }
   
+  render() {
+    const { todoData } = this.state;
     return (
       <div className="todo-app">
         <AppHeader toDo={1} done={3} />
@@ -23,9 +36,10 @@ const App = () => {
           <ItemStatusFilter />
         </div>
   
-        <TodoList todos={todoData} />
+        <TodoList
+          todos={todoData}
+          onDeleted={ this.deleteItem} />
       </div>
     );
+  }
 };
-
-export default App;
