@@ -19,6 +19,7 @@ export default class App extends Component {
       this.createTodoItem('Have a lunch'),
     ],
     term: '',
+    filterBy: 'all',
   }
 
   createTodoItem(label) {
@@ -87,9 +88,27 @@ export default class App extends Component {
     return items.filter(({ label }) => label.toLowerCase().includes(term.toLowerCase()));
   };
 
+  onFilterChange = (filterBy) => {
+    this.setState({ filterBy });
+  }
+
+  filterByDone = (items, value) => {
+    switch(value) {
+      case 'all':
+        return items;
+      case 'active':
+        return items.filter((item) => !item.done);
+      case 'done':
+        return items.filter((item) => item.done);
+      default:
+        return items;
+    }
+  }
+
   render() {
-    const { todoData, term } = this.state;
-    const visibleItems = this.search(todoData, term);
+    const { todoData, term, filterBy } = this.state;
+    const filterItems = this.filterByDone(todoData, filterBy) ;
+    const visibleItems = this.search(filterItems, term);
     const doneCount = todoData.filter((item) => item.done).length;
     const todoCount = todoData.length - doneCount;
 
@@ -98,7 +117,7 @@ export default class App extends Component {
         <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
           <SearchPanel onSearchChange={this.onSearchChange}/>
-          <ItemStatusFilter />
+          <ItemStatusFilter onFilterChange={this.onFilterChange} filterBy={filterBy}/>
         </div>
   
         <TodoList
